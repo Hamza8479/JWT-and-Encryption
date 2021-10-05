@@ -1,4 +1,6 @@
 const User = require("../models/user");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
 // user create if email doesnt exist
 // with async await
@@ -44,10 +46,29 @@ exports.login = async (req, res) => {
     }
 
     const userLogin = await User.findOne({ email: email });
-    if (!userLogin) {
-      res.status(400).json({ err: "User Not Found" });
+
+    if (userLogin) {
+      const isMatch = await bcrypt.compare(password, userLogin.password);
+      //   const token = await userLogin.generateAuthToken();
+      //   console.log("jwt---->", token);
+      let token = jwt.sign({ id: userLogin._id }, process.env.SECRET_KEY);
+      res.cookie("jwt", token, {
+        expires: new Date(Date.now() + 1800000),
+        httpOnly: true,
+      });
+      console.log(token);
+
+      if (!isMatch) {
+        res.status(400).json({ err: "Password dosent match" });
+      } else {
+        res.json({
+          data: "User signin successfully",
+          authToken: token,
+          userLogin,
+        });
+      }
     } else {
-      res.json(userLogin);
+      res.status(400).json({ err: "Invalid Credentials" });
     }
   } catch (err) {
     console.log(err);
