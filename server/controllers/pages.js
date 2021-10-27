@@ -6,9 +6,9 @@ const jwt = require("jsonwebtoken");
 // with async await
 //register
 exports.register = async (req, res) => {
-  const { name, email, phone, work, password, cpassword } = req.body;
+  const { name, email, phone, work, role, password, cpassword } = req.body;
 
-  if (!name || !email || !phone || !work || !password || !cpassword) {
+  if (!name || !email || !phone || !work || !role || !password || !cpassword) {
     return res
       .status(422)
       .json({ err: "Please fill out all the given fields!" });
@@ -21,7 +21,15 @@ exports.register = async (req, res) => {
     } else if (password !== cpassword) {
       return res.status(422).json({ err: "possword doesnt match" });
     } else {
-      const user = new User({ name, email, phone, work, password, cpassword });
+      const user = new User({
+        name,
+        email,
+        phone,
+        role,
+        work,
+        password,
+        cpassword,
+      });
       await user.save();
       res.status(201).json({ message: "User Registered Successfully." });
     }
@@ -44,8 +52,10 @@ exports.login = async (req, res) => {
     if (!email || !password) {
       return res.status(400).json({ error: "Invalid details" });
     }
+    // console.log(email, password);
 
-    const userLogin = await User.findOne({ email: email });
+    const userLogin = await User.findOne({ email });
+    console.log(userLogin);
 
     if (userLogin) {
       const isMatch = await bcrypt.compare(password, userLogin.password);
@@ -53,13 +63,13 @@ exports.login = async (req, res) => {
       //   console.log("jwt---->", token);
       let token = jwt.sign({ id: userLogin._id }, process.env.SECRET_KEY);
       res.cookie("jwt", token, {
-        expires: new Date(Date.now() + 1800000),
+        expires: new Date(Date.now() + 3800000),
         httpOnly: true,
       });
       console.log(token);
 
       if (!isMatch) {
-        res.status(400).json({ err: "Password dosent match" });
+        res.status(400).json({ err: "Password doesnt match" });
       } else {
         res.json({
           data: "User signin successfully",

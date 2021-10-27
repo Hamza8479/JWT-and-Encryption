@@ -26,7 +26,7 @@ router.get("/contact", (req, res) => {
 });
 
 // login route
-router.get("/signin", login);
+router.post("/signin", login);
 
 // registration route
 router.post("/signup", register);

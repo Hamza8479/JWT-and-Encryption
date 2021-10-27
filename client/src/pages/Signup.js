@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import SignupForm from "../components/forms/SignupForm";
 import vector from "../images/contactVector.svg";
 import { AddUser } from "../functions/User";
+import { toast } from "react-toastify";
 
 const initials = {
   name: "",
@@ -28,6 +29,7 @@ const Signup = ({ history }) => {
     AddUser(values)
       .then((res) => {
         window.alert("Registration Succesfully");
+        toast.success("Registered Successfully!");
         console.log(res);
         history.push("/login");
 
@@ -35,7 +37,8 @@ const Signup = ({ history }) => {
       })
       .catch((err) => {
         if (err.response.status === 422) {
-          window.alert("Invalid Registration");
+          toast.error("Invalid Registration");
+          // window.alert("Invalid Registration");
         }
         console.log(err.message);
       });
