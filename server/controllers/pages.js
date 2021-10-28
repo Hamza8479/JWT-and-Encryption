@@ -84,6 +84,7 @@ exports.login = async (req, res) => {
     console.log(err);
   }
 };
+//solved bugs
 
 // user create if email doesnt exist
 // without async await
