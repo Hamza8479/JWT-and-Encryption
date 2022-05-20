@@ -84,6 +84,13 @@ exports.login = async (req, res) => {
     console.log(err);
   }
 };
+
+//get companies
+exports.companies = async (req, res) => {
+  const userExist = await User.findOne({ _id: req.user.id });
+  return res.json({code:200,data:userExist});
+};
+
 //solved bugs
 
 // user create if email doesnt exist
